@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  mongo-db:
+    image: mongo
+    container_name: mongo-db
+    volumes:
+      - ./db/:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - shared-net
+    restart: always
+  java-api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    container_name: java-api
+    links:
+      - mongo-db
+    depends_on:
+      - mongo-db
+    hostname: localhost
+    networks:
+      - shared-net
+    restart: always
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/seguradora-de-veiculos-db
+networks:
+  shared-net:
+    driver: bridge 
